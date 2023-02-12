@@ -1,12 +1,16 @@
 <template>
   <div class="h-screen flex justify-center items-center">
-    <div>
-      <div class="flex" v-for="(row, rowIndex) in map" :key="rowIndex">
-        <div class="w-14 h-14" :class="[mapBackGround[col]]" v-for="(col, colIndex) in row" :key="colIndex">
-          {{ rowIndex + '-' + colIndex }}
+    <div class="relative">
+      <div class="flex" v-for="(row, rowIndex) in mapBG" :key="rowIndex">
+        <div class="w-14 h-14" :class="[mapFloorBackGround[col]]" v-for="(col, colIndex) in row" :key="colIndex"></div>
+      </div>
+      <div class="absolute top-0 left-0">
+        <div class="flex" v-for="(row, rowIndex) in map" :key="rowIndex">
+          <div class="w-14 h-14" :class="[mapBackGround[col]]" v-for="(col, colIndex) in row" :key="colIndex"></div>
         </div>
       </div>
     </div>
+
     <div class="text-6">
       <div>第{{ level }}关</div>
       <div @click="initGame">重新kaishi</div>
@@ -18,19 +22,30 @@
 
 <script setup lang="ts">
 import { maps } from '@/utils/maps'
-import { nextTick, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { onKeyUp } from '@vueuse/core'
 
 const level = ref<number>(1)
 const personLocation = ref<number[]>([])
 const boxTargetLocation = ref<number[][]>([])
+const mapBG = ref<number[][]>([])
 const map = ref<number[][]>([])
-const mapBackGround = ref<{ [key: number]: any }>({
+const mapFloorBackGround = ref<{ [key: number]: any }>({
   0: 'bg-white', // road 地面
   1: 'bg-blue', // wall 墙壁
+  // 2: 'bg-indigo', // person 人
+  // 4: 'bg-orange', // box 初始化位置
+  5: 'bg-black', // box 目标位置
+  6: 'bg-black', // box 初始位置 + 目标位置 重登
+})
+const mapBackGround = ref<{ [key: number]: any }>({
+  // 0: 'bg-white', // road 地面
+  // 1: 'bg-blue', // wall 墙壁
+  // 2: 'transparent', // person 人
   2: 'bg-indigo', // person 人
   4: 'bg-orange', // box 初始化位置
-  5: 'bg-black', // box 目标位置
+  // 5: 'bg-black', // box 目标位置
+  6: 'bg-orange', // box 初始化位置 + 目标位置 重登
 })
 
 const onPreLevel = () => {
@@ -45,11 +60,12 @@ const onNextLevel = () => {
 }
 
 const initGame = () => {
-  console.log(maps)
-  console.log(level.value)
+  // console.log(maps)
+  // console.log(level.value)
   boxTargetLocation.value.length = 0
+  mapBG.value = JSON.parse(JSON.stringify(maps.slice(level.value - 1, level.value)[0]))
   map.value = JSON.parse(JSON.stringify(maps.slice(level.value - 1, level.value)[0]))
-  console.log('map', map.value)
+  // console.log('map', map.value)
   map.value.forEach((row, rowIndex) => {
     // 记录人的位置
     if (row.includes(2)) {
@@ -57,9 +73,9 @@ const initGame = () => {
       personLocation.value = [rowIndex, colIndex]
     }
     // 记录箱子的终点位置
-    if (row.includes(5)) {
+    if (row.includes(5) || row.includes(6)) {
       row.forEach((col, colIndex) => {
-        if (col === 5) {
+        if (col === 5 || col === 6) {
           boxTargetLocation.value.push([rowIndex, colIndex])
         }
       })
@@ -90,8 +106,8 @@ const move = (direction: Direction) => {
   // 碰到墙壁无法移动
   const hitWall = targetValue === 1
   // 推到箱子, 并且箱子后面不是地板, 推不动
-  const isNotFloor = targetValue === 4 && nextTargetValue !== 0 && nextTargetValue !== 5
-  if (hitWall || isNotFloor) return
+  const notFloor = (targetValue === 4 || targetValue === 6) && nextTargetValue !== 0 && nextTargetValue !== 5
+  if (hitWall || notFloor) return
 
   // 移动人
   map.value[rowIndex][colIndex] = 0
@@ -99,7 +115,7 @@ const move = (direction: Direction) => {
   personLocation.value = [targetRowIndex, targetColIndex]
 
   // 移动箱子(可以移动, 并且推到箱子)
-  if (targetValue === 4) {
+  if (targetValue === 4 || targetValue === 6) {
     map.value[nextTargetRowIndex][nextTargetColIndex] = 4
     // 箱子有移动, 判断是否过关
     const isPass = boxTargetLocation.value.every(([rowIndex, colIndex]) => map.value[rowIndex][colIndex] === 4)
