@@ -31,21 +31,21 @@ const boxTargetLocation = ref<number[][]>([])
 const mapBG = ref<number[][]>([])
 const map = ref<number[][]>([])
 const mapFloorBackGround = ref<{ [key: number]: any }>({
-  0: 'bg-white', // road 地面
+  0: 'bg-floor', // road 地面
   1: 'bg-blue', // wall 墙壁
-  // 2: 'bg-indigo', // person 人
-  // 4: 'bg-orange', // box 初始化位置
+  2: 'bg-floor', // person 人
+  4: 'bg-floor', // box 初始化位置
   5: 'bg-black', // box 目标位置
-  6: 'bg-black', // box 初始位置 + 目标位置 重登
+  6: 'bg-black', // box 初始位置 + 目标位置 重叠
 })
 const mapBackGround = ref<{ [key: number]: any }>({
   // 0: 'bg-white', // road 地面
   // 1: 'bg-blue', // wall 墙壁
   // 2: 'transparent', // person 人
-  2: 'bg-indigo', // person 人
-  4: 'bg-orange', // box 初始化位置
+  2: 'bg-pig', // person 人
+  4: 'bg-box', // box 初始化位置
   // 5: 'bg-black', // box 目标位置
-  6: 'bg-orange', // box 初始化位置 + 目标位置 重登
+  6: 'bg-orange', // box 初始化位置 + 目标位置 重叠
 })
 
 const onPreLevel = () => {
@@ -156,4 +156,17 @@ onMounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.bg-box {
+  background-image: url('/images/box.png');
+  background-size: contain;
+}
+.bg-pig {
+  background-image: url('/images/pig.png');
+  background-size: contain;
+}
+.bg-floor {
+  background-image: url('/images/floor.png');
+  background-size: contain;
+}
+</style>
