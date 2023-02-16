@@ -22,8 +22,6 @@
 
 <script setup lang="ts">
 import { maps } from '@/utils/maps'
-import { onMounted, ref } from 'vue'
-import { onKeyUp } from '@vueuse/core'
 
 const level = ref<number>(1)
 const personLocation = ref<number[]>([])
