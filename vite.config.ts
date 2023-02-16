@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/game-pushBox/',
   plugins: [
     vue(),
     UnoCSS({}),
