@@ -30,7 +30,7 @@ const mapBG = ref<number[][]>([])
 const map = ref<number[][]>([])
 const mapFloorBackGround = ref<{ [key: number]: any }>({
   0: 'bg-floor', // road 地面
-  1: 'bg-blue', // wall 墙壁
+  1: 'bg-wall', // wall 墙壁
   2: 'bg-floor', // person 人
   4: 'bg-floor', // box 初始化位置
   5: 'bg-black', // box 目标位置
@@ -166,5 +166,10 @@ onMounted(() => {
 .bg-floor {
   background-image: url('/images/floor.png');
   background-size: contain;
+}
+.bg-wall {
+  background-image: url('https://api.iconify.design/game-icons:abstract-025.svg');
+  background-size: contain;
+  background-color: #333;
 }
 </style>
